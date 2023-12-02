@@ -49,8 +49,12 @@ class Components:
             endgame.spin_for(d, abs(amount)*self.endgame_ratio, TURNS)
     def catapult(self, direction=FORWARD, amount=None):
         if direction == None:
+            dt_left.set_stopping(BRAKE)
+            dt_right.set_stopping(BRAKE)
             catapult.stop()
         elif amount == None:
+            dt_left.set_stopping(HOLD)
+            dt_right.set_stopping(HOLD)
             catapult.spin(direction)
         else:
             d = FORWARD if ((1 if direction == FORWARD else -1)*(1 if amount>=0 else -1)) == 1 else REVERSE
@@ -75,7 +79,8 @@ class Drivetrain:
             if brain.timer.time(SECONDS)-old_time >= timeout:
                 dt_left.stop()
                 dt_right.stop()
-    def turn2(self, angle, speed=30):
+    def turn2(self, angle_unmodded, speed=30):
+        angle = angle_unmodded % 360
         while abs(angle - orientation.heading(DEGREES)) % 360 > 0.5:
             h = orientation.heading(DEGREES)
             dt_left.set_velocity(abs((angle - h + 180) % 360 - 180) * speed * 2 / 180 + 3, PERCENT)
